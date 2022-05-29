@@ -27,11 +27,17 @@ class UserListViewController: UIViewController {
     }
     
     @objc func searchUser(searchbar:UISearchBar) {
+        let searchText = searchBar.text?.replacingOccurrences(of: " ", with: "")
+        
+        if searchText == "" {
+            return
+        }
+        
         activityView.startAnimating()
         self.userListTableView.removeEmptyView()
         activityView.isHidden = false
         searchbar.resignFirstResponder()
-        let searchText = searchBar.text?.replacingOccurrences(of: " ", with: "")
+        
         UserApiManager.getSearchedUsers(searchString: searchText!, completionHandler: {usersModel, error in
             
             self.activityView.stopAnimating()
@@ -99,7 +105,7 @@ extension UserListViewController: UITableViewDelegate, UITableViewDataSource {
 extension UserListViewController: UISearchBarDelegate {
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        if (searchBar.text != "" && searchBar.text!.count > 0) {
+        if (searchText != "" && searchText.count > 0) {
             NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(searchUser(searchbar:)), object: searchBar)
             self.perform(#selector(searchUser(searchbar:)), with: searchBar, afterDelay: 0.5)
         }
